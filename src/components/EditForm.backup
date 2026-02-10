@@ -60,8 +60,7 @@ const invoiceSchema = z
       .number()
       .min(0, "Paid amount cannot be negative"),
     student_id: z.string().min(1, "Student ID is required"),
-    date_charged: z.string().min(1, "Date is required"),
-    // date_charged: z.date({}),
+    date_charged: z.date({}),
     status: z.enum(["paid", "unpaid", "partial"]),
   })
   .refine(
@@ -91,10 +90,6 @@ function generateRandomId(): string {
   return `chg_${randomNumber}`;
 }
 
-function getTodayDateString(): string {
-  return new Date().toISOString().split("T")[0]; //YYYY-MM-DD format
-}
-
 function InvoicePageWithoutRef({
   onSubmit,
   selectedInvoice,
@@ -121,7 +116,7 @@ function InvoicePageWithoutRef({
       charge_amount: 0,
       paid_amount: 0,
       student_id: "",
-      date_charged: getTodayDateString(),
+      date_charged: new Date(),
       status: "unpaid",
     },
   });
@@ -143,7 +138,7 @@ function InvoicePageWithoutRef({
       charge_amount: 0,
       paid_amount: 0,
       student_id: "",
-      date_charged: getTodayDateString(),
+      date_charged: new Date(),
       status: "partial",
     });
   };
@@ -154,7 +149,6 @@ function InvoicePageWithoutRef({
 
   useEffect(() => {
     if (selectedInvoice) {
-      /* 
       // Convert string date back to Date object for form
       const formData = {
         ...selectedInvoice,
@@ -162,15 +156,14 @@ function InvoicePageWithoutRef({
           ? new Date(selectedInvoice.date_charged)
           : new Date(),
       };
-      methods.reset(formData); */
-      methods.reset(selectedInvoice);
+      methods.reset(formData);
     } else {
       methods.reset({
         charge_id: generateRandomId(),
         charge_amount: 0,
         paid_amount: 0,
         student_id: "",
-        date_charged: getTodayDateString(),
+        date_charged: new Date(),
         status: "unpaid",
       });
     }
@@ -500,46 +493,32 @@ function InvoiceDate() {
         <Controller
           control={control}
           name="date_charged"
-          render={({ field }) => {
-            const dateValue = field.value
-              ? new Date(field.value)
-              : undefined;
-
-            return (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    data-empty={!field.value}
-                    className="data-[empty=true]:text-muted-foreground h-11 w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateValue ? (
-                      format(dateValue, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={dateValue}
-                    onSelect={(selectedDate) => {
-                      if (selectedDate) {
-                        //convert date back to YYYY-MM-DD
-                        const formattedDate = selectedDate
-                          .toISOString()
-                          .split("T")[0];
-                        field.onChange(formattedDate);
-                      }
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            );
-          }}
+          render={({ field }) => (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  data-empty={!field.value}
+                  className="data-[empty=true]:text-muted-foreground h-11 w-full justify-start text-left font-normal"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {field.value ? (
+                    format(field.value, "PPP")
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={field.value}
+                  onSelect={field.onChange}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          )}
         />
         {errors.date_charged && (
           <div className="text-red-500 flex gap-1 items-center text-[13px]">
