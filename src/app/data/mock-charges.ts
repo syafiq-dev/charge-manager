@@ -20,7 +20,7 @@ export const mockCharges: InvoiceFormData[] = [
     paid_amount: 0.0,
     student_id: "stu_101",
     date_charged: "2025-01-05",
-    status: "paid",
+    status: "unpaid",
   },
   {
     charge_id: "chg_002",
@@ -36,7 +36,7 @@ export const mockCharges: InvoiceFormData[] = [
     paid_amount: 50.0,
     student_id: "stu_101",
     date_charged: "2025-01-12",
-    status: "paid",
+    status: "partial",
   },
   {
     charge_id: "chg_004",
@@ -44,7 +44,7 @@ export const mockCharges: InvoiceFormData[] = [
     paid_amount: 0.0,
     student_id: "stu_103",
     date_charged: "2025-01-15",
-    status: "paid",
+    status: "unpaid",
   },
   {
     charge_id: "chg_005",

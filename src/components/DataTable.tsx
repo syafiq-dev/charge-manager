@@ -811,14 +811,14 @@ export function DataTable<
 
   return (
     <Card
-      className={`border rounded-xl h-full flex flex-col ${eliminateOuterPadding ? "p-0" : "p-3"}  ${className}`}
+      className={`border bg-neutral-100 rounded-xl h-full flex flex-col ${eliminateOuterPadding ? "p-0" : "p-3"}  ${className}`}
     >
       <div
-        className={`flex justify-between items-center ${eliminateOuterPadding ? "" : "px-3 mb-3"}   max-sm:flex-col 
+        className={`flex  justify-between items-center ${eliminateOuterPadding ? "" : "px-3 mb-3"}   max-sm:flex-col 
       max-sm:items-start  `}
       >
         <div
-          className={` ${eliminateOuterPadding ? "" : "px-3 mb-3"} w-1/2`}
+          className={`  ${eliminateOuterPadding ? "" : "px-3 mb-3"} w-1/2`}
         >
           <h2 className="font-semibold text-2xl text-gray-800 dark:text-white">
             {title}
@@ -829,7 +829,7 @@ export function DataTable<
         </div>
 
         {/* SEARCH INPUT */}
-        <div className="flex items-start gap-3 w-1/2     justify-end max-sm:justify-start max-sm:w-full">
+        <div className="flex items-start gap-3 w-1/2 justify-end max-sm:justify-start max-sm:w-full">
           {search && (
             <div
               className={`w-[75%] ${
@@ -838,7 +838,7 @@ export function DataTable<
             >
               <Input
                 placeholder={search.placeholder}
-                className="h-10 "
+                className="h-10 bg-white border-solid border-neutral-300"
                 value={search.searchValue}
                 onChange={(e) =>
                   search.setSearchValue(e.target.value)
@@ -1054,7 +1054,7 @@ export function DataTable<
                         : index === columnsLength - 1
                           ? "rounded-r-sm"
                           : ""
-                    } text-gray-500 dark:text-white uppercase tracking-wider`}
+                    }  text-gray-500 dark:text-white uppercase tracking-wider`}
                   >
                     <div className="flex items-center cursor-pointer">
                       {enhancedHeaders[key]}

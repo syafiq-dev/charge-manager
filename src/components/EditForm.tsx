@@ -156,6 +156,20 @@ function InvoicePageWithoutRef({
   const currentInvoice = methods.watch();
 
   const handleFormSubmit = (data: InvoiceFormData) => {
+    // Add toast validation
+
+    if (!data.status || data.status.trim() === "") {
+      toast.error("Status cannot be empty", {
+        description: "Please select a status to proceed.",
+        position: "bottom-right",
+        className: "!bg-blue-400 !text-white",
+        classNames: {
+          description: " !text-neutral-100",
+        },
+      });
+    }
+
+    onSubmit?.(data);
     /* // Convert date to string format matching mock data
     const formattedData = {
       ...data,
@@ -164,7 +178,6 @@ function InvoicePageWithoutRef({
 
     onSubmit?.(formattedData as InvoiceFormData);
  */
-    onSubmit?.(data);
   };
 
   const resetFormWithNewId = () => {
@@ -717,3 +730,4 @@ function SummarySection() {
 
 // Import CalendarIcon if not already imported
 import { Calendar as CalendarIcon } from "lucide-react";
+import { toast } from "sonner";
