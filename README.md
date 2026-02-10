@@ -1,6 +1,6 @@
 ## Web Demo
 
-[Click here to test the web demo]()
+[Click here to test the web demo](https://supersharkz-demo.syafiq.art/)
 
 ## Setup on Development
 
@@ -24,4 +24,4 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Steps / Documentations
 
-To learn more...
+Documentations is in progress...
