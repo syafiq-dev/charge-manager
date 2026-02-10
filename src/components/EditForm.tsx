@@ -135,6 +135,8 @@ function InvoicePageWithoutRef({
       date_charged: format(data.date_charged, "yyyy-MM-dd"),
     };
     onSubmit?.(formattedData as InvoiceFormData);
+
+    console.log("lolol", formattedData);
   };
 
   const resetFormWithNewId = () => {

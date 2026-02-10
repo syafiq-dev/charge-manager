@@ -17,7 +17,11 @@ const EditChargePage = () => {
   const charge = getCharge(chargeId);
 
   const handleSubmit = (data: InvoiceFormData) => {
-    console.log("Update charge:", data);
+    alert(123);
+    console.log(params);
+
+    // updateCharge(chargeId);
+
     router.push("/all-invoices");
   };
 

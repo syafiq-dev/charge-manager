@@ -53,7 +53,7 @@ export const handleRowClick = (
   const invoiceId = extractTextFromReactNode(
     row["invoiceId"],
   );
-
+  /* 
   // find the invoice in the list
   const findInvoice = invoices.find(
     (inv) => inv.invoiceId === invoiceId,
@@ -62,12 +62,13 @@ export const handleRowClick = (
   // update the selected invoice
   if (findInvoice) {
     setSelectedInvoice(findInvoice);
-  }
+  } */
 
   // go to invoice creator
   push("/charge-creator");
 };
 
+/* 
 export function sortByNewest(
   invoices: InvoiceFormData[],
 ): InvoiceFormData[] {
@@ -77,6 +78,8 @@ export function sortByNewest(
     return idB - idA;
   });
 }
+
+ */
 export const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
