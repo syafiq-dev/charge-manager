@@ -156,18 +156,31 @@ function InvoicePageWithoutRef({
   const currentInvoice = methods.watch();
 
   const handleFormSubmit = (data: InvoiceFormData) => {
-    // Add toast validation
+    // Auto calculate status
+    let autoStatus: "paid" | "unpaid" | "partial" =
+      "unpaid";
 
-    if (!data.status || data.status.trim() === "") {
-      toast.error("Status cannot be empty", {
-        description: "Please select a status to proceed.",
-        position: "bottom-right",
-        className: "!bg-blue-400 !text-white",
-        classNames: {
-          description: " !text-neutral-100",
-        },
-      });
+    if (data.charge_amount > 0) {
+      if (data.paid_amount >= data.charge_amount) {
+        autoStatus = "paid";
+      } else if (data.paid_amount > 0) {
+        autoStatus = "partial";
+      } else {
+        autoStatus = "unpaid";
+      }
     }
+
+    const finalData = {
+      ...data,
+      status: autoStatus,
+    };
+
+    console.log("auto calculated status: ", autoStatus);
+
+    toast.success("Charge Saved", {
+      description: `Charge ${finalData.charge_id} saved as ${autoStatus}`,
+      position: "bottom-right",
+    });
 
     onSubmit?.(data);
     /* // Convert date to string format matching mock data
@@ -275,11 +288,54 @@ export default InvoicePage;
 
 // LEFT AREA COMPONENT
 function LeftArea({ onClose }: { onClose: () => void }) {
-  const { control, watch } =
+  const { control, watch, setValue } =
     useFormContext<InvoiceFormData>();
 
   const charge_id = watch("charge_id");
-  const status = watch("status");
+  const chargeAmount = watch("charge_amount") || 0;
+  const paidAmount = watch("paid_amount") || 0;
+
+  // Auto calculate status
+  const calculateStatus = (): {
+    status: "paid" | "unpaid" | "partial";
+    label: string;
+    color: string;
+    bgColor: string;
+  } => {
+    if (chargeAmount > 0) {
+      if (paidAmount >= chargeAmount) {
+        return {
+          status: "paid",
+          label: "Paid",
+          color: "text-green-600",
+          bgColor: "bg-green-50",
+        };
+      } else if (paidAmount > 0) {
+        return {
+          status: "partial",
+          label: "Partial",
+          color: "text-amber-600",
+          bgColor: "bg-amber-50",
+        };
+      }
+    }
+
+    return {
+      status: "unpaid",
+      label: "Unpaid",
+      color: "text-red-600",
+      bgColor: "bg-red-50",
+    };
+  };
+
+  const autoStatus = calculateStatus();
+
+  // Update Form Status value
+  useEffect(() => {
+    setValue("status", autoStatus.status, {
+      shouldValidate: true,
+    });
+  }, [autoStatus.status, setValue]);
 
   const theHeader = (
     <div className="flex justify-between items-center">
@@ -288,84 +344,32 @@ function LeftArea({ onClose }: { onClose: () => void }) {
           <span className="font-bold">Charge</span>
           <span className="text-primary">{charge_id}</span>
         </div>
+
+        {/* AUTO STATUS DISPLAY [READ-ONLY] */}
+        <div
+          className={`${autoStatus.bgColor} ${autoStatus.color} border-none text-[15px] shadow-none w-[150px] pl-4 h-10 rounded-lg flex items-center justify-center gap-2`}
+        >
+          {autoStatus.status === "paid" && (
+            <CircleCheck size={18} />
+          )}
+          {autoStatus.status === "unpaid" && (
+            <CircleX size={18} />
+          )}
+          {autoStatus.status === "partial" && (
+            <FileText size={18} />
+          )}
+          <span className="font-medium">
+            {autoStatus.label}
+          </span>
+        </div>
+
         <Controller
           name="status"
           control={control}
-          render={({ field }) => {
-            return (
-              <Select
-                value={field.value}
-                onValueChange={field.onChange}
-              >
-                <SelectTrigger
-                  className={` ${
-                    field.value === "paid"
-                      ? "bg-green-50"
-                      : field.value === "unpaid"
-                        ? "bg-red-50"
-                        : "bg-gray-50"
-                  } border-none text-[15px] shadow-none w-[150px] pl-4 h-10 rounded-lg`}
-                >
-                  <SelectValue placeholder="Select status">
-                    {field.value === "paid" && (
-                      <>
-                        <CircleCheck
-                          size={16}
-                          className="text-green-600"
-                        />
-                        <span className="text-green-600">
-                          Paid
-                        </span>
-                      </>
-                    )}
-                    {field.value === "unpaid" && (
-                      <>
-                        <CircleX
-                          size={16}
-                          className="text-red-600"
-                        />
-                        <span className="text-red-600">
-                          Unpaid
-                        </span>
-                      </>
-                    )}
-                    {field.value === "partial" && (
-                      <>
-                        <FileText
-                          size={16}
-                          className="text-gray-600"
-                        />
-                        <span className="text-gray-600">
-                          Partial
-                        </span>
-                      </>
-                    )}
-                    {!field.value && "Select status"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="paid">
-                    <div className="text-[15px] text-green-600 h-8 items-center flex gap-2">
-                      <CircleCheck size={18} />
-                      <span>Paid</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="unpaid">
-                    <div className="text-[15px] h-8 text-red-600 items-center flex gap-2">
-                      <CircleX size={18} />
-                      <span>Unpaid</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="partial">
-                    <div className="text-[15px] h-8 text-gray-600 items-center flex gap-2">
-                      <FileText size={18} />
-                      <span>Partial</span>
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            );
-          }}
+          defaultValue={autoStatus.status}
+          render={({ field }) => (
+            <input type="hidden" {...field} />
+          )}
         />
       </div>
       <div
@@ -663,7 +667,17 @@ function SummarySection() {
   const chargeAmount = watch("charge_amount") || 0;
   const paidAmount = watch("paid_amount") || 0;
   const balance = chargeAmount - paidAmount;
-  const status = watch("status");
+
+  // AUTO CALCULATE STATUS
+  const getStatus = () => {
+    if (chargeAmount > 0) {
+      if (paidAmount >= chargeAmount) return "paid";
+      if (paidAmount > 0) return "partial";
+    }
+    return "unpaid";
+  };
+
+  const status = getStatus();
 
   return (
     <div className="mt-20">
