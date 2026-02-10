@@ -95,6 +95,33 @@ function getTodayDateString(): string {
   return new Date().toISOString().split("T")[0]; //YYYY-MM-DD format
 }
 
+function fixStatus(
+  status: any,
+): "paid" | "unpaid" | "partial" {
+  if (!status) return "unpaid";
+
+  // Convert to string and lowercase
+  const statusStr = String(status).toLowerCase().trim();
+
+  // Check what we actually get
+  console.log(
+    "fixStatus: Input:",
+    status,
+    "Output:",
+    statusStr,
+  );
+
+  if (statusStr === "paid") return "paid";
+  if (statusStr === "unpaid") return "unpaid";
+  if (statusStr === "partial") return "partial";
+
+  console.warn(
+    "Unknown status, defaulting to unpaid:",
+    status,
+  );
+  return "unpaid";
+}
+
 function InvoicePageWithoutRef({
   onSubmit,
   selectedInvoice,
@@ -129,14 +156,15 @@ function InvoicePageWithoutRef({
   const currentInvoice = methods.watch();
 
   const handleFormSubmit = (data: InvoiceFormData) => {
-    // Convert date to string format matching mock data
+    /* // Convert date to string format matching mock data
     const formattedData = {
       ...data,
       date_charged: format(data.date_charged, "yyyy-MM-dd"),
     };
-    onSubmit?.(formattedData as InvoiceFormData);
 
-    console.log("lolol", formattedData);
+    onSubmit?.(formattedData as InvoiceFormData);
+ */
+    onSubmit?.(data);
   };
 
   const resetFormWithNewId = () => {
@@ -146,7 +174,7 @@ function InvoicePageWithoutRef({
       paid_amount: 0,
       student_id: "",
       date_charged: getTodayDateString(),
-      status: "partial",
+      status: "unpaid",
     });
   };
 
@@ -156,15 +184,6 @@ function InvoicePageWithoutRef({
 
   useEffect(() => {
     if (selectedInvoice) {
-      /* 
-      // Convert string date back to Date object for form
-      const formData = {
-        ...selectedInvoice,
-        date_charged: selectedInvoice.date_charged
-          ? new Date(selectedInvoice.date_charged)
-          : new Date(),
-      };
-      methods.reset(formData); */
       methods.reset(selectedInvoice);
     } else {
       methods.reset({
@@ -259,51 +278,81 @@ function LeftArea({ onClose }: { onClose: () => void }) {
         <Controller
           name="status"
           control={control}
-          render={({ field }) => (
-            <Select
-              value={field.value}
-              onValueChange={field.onChange}
-            >
-              <SelectTrigger
-                className={` ${
-                  field.value === "paid"
-                    ? "bg-green-50"
-                    : field.value === "unpaid"
-                      ? "bg-red-50"
-                      : "bg-gray-50"
-                } border-none text-[15px] shadow-none w-[150px] pl-4 h-10 rounded-lg`}
+          render={({ field }) => {
+            return (
+              <Select
+                value={field.value}
+                onValueChange={field.onChange}
               >
-                <SelectValue placeholder="Select status">
-                  {field.value === "paid" && "Paid"}
-                  {field.value === "unpaid" && "Unpaid"}
-                  {field.value === "partial" && "Partial"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem
-                  value="paid"
-                  className="text-[15px]"
+                <SelectTrigger
+                  className={` ${
+                    field.value === "paid"
+                      ? "bg-green-50"
+                      : field.value === "unpaid"
+                        ? "bg-red-50"
+                        : "bg-gray-50"
+                  } border-none text-[15px] shadow-none w-[150px] pl-4 h-10 rounded-lg`}
                 >
-                  <div className="text-[15px] text-green-600 h-8 items-center flex gap-2">
-                    <CircleCheck size={18} />
-                    <span>Paid</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="unpaid">
-                  <div className="text-[15px] h-8 text-red-600 items-center flex gap-2">
-                    <CircleX size={18} />
-                    <span>Unpaid</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="partial">
-                  <div className="text-[15px] h-8 text-gray-600 items-center flex gap-2">
-                    <FileText size={18} />
-                    <span>Partial</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          )}
+                  <SelectValue placeholder="Select status">
+                    {field.value === "paid" && (
+                      <>
+                        <CircleCheck
+                          size={16}
+                          className="text-green-600"
+                        />
+                        <span className="text-green-600">
+                          Paid
+                        </span>
+                      </>
+                    )}
+                    {field.value === "unpaid" && (
+                      <>
+                        <CircleX
+                          size={16}
+                          className="text-red-600"
+                        />
+                        <span className="text-red-600">
+                          Unpaid
+                        </span>
+                      </>
+                    )}
+                    {field.value === "partial" && (
+                      <>
+                        <FileText
+                          size={16}
+                          className="text-gray-600"
+                        />
+                        <span className="text-gray-600">
+                          Partial
+                        </span>
+                      </>
+                    )}
+                    {!field.value && "Select status"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="paid">
+                    <div className="text-[15px] text-green-600 h-8 items-center flex gap-2">
+                      <CircleCheck size={18} />
+                      <span>Paid</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="unpaid">
+                    <div className="text-[15px] h-8 text-red-600 items-center flex gap-2">
+                      <CircleX size={18} />
+                      <span>Unpaid</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="partial">
+                    <div className="text-[15px] h-8 text-gray-600 items-center flex gap-2">
+                      <FileText size={18} />
+                      <span>Partial</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            );
+          }}
         />
       </div>
       <div

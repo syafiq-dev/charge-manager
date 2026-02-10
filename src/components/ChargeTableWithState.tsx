@@ -85,7 +85,7 @@ export default function ChargesTableWithState() {
       description={`${mockCharges.length} charges`}
       clickableColumns={["student_id"]}
       pagination={{ rowsPerPage: 10 }}
-      showCheckboxes={{ enable: true }}
+      showCheckboxes={{ enable: false }}
       filterBy={["student_id"]}
       headers={tableHeaders}
       rows={tableData}

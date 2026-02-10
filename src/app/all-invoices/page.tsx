@@ -30,48 +30,6 @@ function AllInvoicesPage() {
   return (
     <div>
       <ChargesTableWithState />
-      {/* 
-      <DataTable
-        title="All Charges"
-        showSortingButtons={false}
-        className="p-7 border-none shadow-none"
-        description={`${mockCharges.length} charges`}
-        clickableColumns={["student_id"]}
-        pagination={{ rowsPerPage: 10 }}
-        showCheckboxes={{ enable: true }}
-        filterBy={["student_id"]}
-        headers={tableHeaders}
-        rows={formatInvoicesForDisplay(mockCharges)}
-        notFoundText="Charge not found..."
-        dropDownItems={dropDownItems}
-        search={{
-          keyToSearchBy: "student_id",
-          searchValue: search,
-          setSearchValue: setSearch,
-          placeholder: "Search for Student ID",
-        }}
-        enableStripedRows={true}
-        showActionsColumn={true}
-        callToAction={
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={goBackToDashboard}
-              variant={"outline"}
-              className="h-10"
-            >
-              <IoIosArrowRoundBack />
-              <span>Back</span>
-            </Button>
-            <Button
-              onClick={goBackToChargeCreator}
-              className="h-10"
-            >
-              <FaPlus />
-              <span>New Charge</span>
-            </Button>
-          </div>
-        }
-      ></DataTable> */}
     </div>
   );
 }

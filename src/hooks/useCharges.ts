@@ -13,6 +13,8 @@ const loadCharges = (): InvoiceFormData[] => {
 
   if (saved) {
     try {
+      console.log("load Charges", JSON.parse(saved));
+
       return JSON.parse(saved);
     } catch {
       return mockCharges;
